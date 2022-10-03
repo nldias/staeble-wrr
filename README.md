@@ -3,7 +3,7 @@
 
 This repository contains 3 Chapel programs which implement the STAEBLE
 Lake Evaporation Model.
-You will need to install the Chapel programming language: see [https://chapel-lang.org/].
+You will need to install the Chapel programming language: see https://chapel-lang.org/.
 The model is described [here](https://doi.org/10.1002/essoar.10511612.1)
 A description of each program (a "help") can be printed with
 
