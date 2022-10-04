@@ -271,7 +271,16 @@ proc Enclose(in aM: real): real {
     var (delta,rr) = ddse(yy[i],mm[i],dd[i]);
     var (Rsea,dsmax) = rsds(rlat,rr,delta);
     var S = SPrescott(Rsea,Rs[i]);
-    var alb = WaterAlbedo(yy[i],mm[i],dd[i],rlat);
+    var alb: real;
+    // -----------------------------------------------------------------------------
+    // check for the albedo of ice
+    // -----------------------------------------------------------------------------   
+    if T0[i] > 0.0 then {
+      alb = WaterAlbedo(yy[i],mm[i],dd[i],rlat);
+    }
+    else {
+      alb = 0.45;
+    }
     var TaK = Ta[i]+273.15;
     var T0K = T0[i]+273.15;
     Radiation(alb,ea[i],TaK,T0K,S,Rs[i],Ra[i],Re[i],Rn[i]);
