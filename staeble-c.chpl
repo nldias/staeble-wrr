@@ -27,9 +27,7 @@ use sunearth only ddse, rsds;
 use atmgas;
 use angles;
 use evap;
-use nstat;
 use ssr only sum;
-use water;
 IniPar(374.60,0.97);               // Lake Meads's altitude, water emissivity
 var rlat = dec2rad(36.146084);     // Lake Mead's latitude in radians
 Prescott(a=0.3,b=0.575);           // Prescott's constants for Lake Mead

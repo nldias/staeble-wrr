@@ -9,7 +9,7 @@ A description of each program (a "help") can be printed with
 
 ./staeble-n --describe
 
-(and so forth)
+(and so forth). The programs are
 
 - staeble-n.chpl
 
@@ -25,4 +25,22 @@ A description of each program (a "help") can be printed with
 
 The input file is lakemead-mod.dat. The outputs are staeble-a.out,
 staeble-b.out, staeble-ab.out, staeble-c.out and staeble-ch.out, and
-will be overwritten when you compile and run the program
+will be overwritten when you compile and run the programs.
+
+The programs use 5 modules that are also included in this repository, as follows:
+
+- dgrow.chpl
+- sunearth.chpl
+- atmgas.chpl
+- angles.chpl
+- evap.chpl
+- ssr.chpl
+
+All source code here comes straight from our research, and is not
+directly usable at places other than Lake Mead: for example, altitude,
+latitude, and various parameters for radiation models are hard-wired
+into the code. For use at other lakes, the corresponding lines (at
+least) will have to be modified.
+
+
+Also need to put a GPL license
