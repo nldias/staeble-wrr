@@ -51,4 +51,3 @@ research and/or educational purposes.
 Nelson Luís Dias
 nldias@ufpr.br
 
-All Also need to put a GPL license
