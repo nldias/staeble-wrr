@@ -42,5 +42,13 @@ latitude, and various parameters for radiation models are hard-wired
 into the code. For use at other lakes, the corresponding lines (at
 least) will have to be modified.
 
+All source code in this repository is released under the GPL license.
+I cannot garantee that the code is correct under any circumstances of
+use; use it at your own risk (see the GPL license in file GPL.txt); and I cannot
+provide support for the code. However, I hope this is useful for
+research and/or educational purposes.
 
-Also need to put a GPL license
+Nelson Luís Dias
+nldias@ufpr.br
+
+All Also need to put a GPL license
