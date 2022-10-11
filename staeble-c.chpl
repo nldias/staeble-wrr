@@ -27,7 +27,9 @@ use sunearth only ddse, rsds;
 use atmgas;
 use angles;
 use evap;
+use nstat;
 use ssr only sum;
+use water;
 IniPar(374.60,0.97);               // Lake Meads's altitude, water emissivity
 var rlat = dec2rad(36.146084);     // Lake Mead's latitude in radians
 Prescott(a=0.3,b=0.575);           // Prescott's constants for Lake Mead
@@ -201,7 +203,9 @@ private proc Flux(
   const delT = T0 - Ta;           // temperature difference
   const Tv = (1 + 0.61*qa)*Ta;    // virtual temperature
   var zeta_a: real;               // stability at za
+  var zeta0_a: real;              // stablity at z0E
   var zeta_b: real;               // stability at zb
+  var zeta0_b: real;              // stability at z0
   var
     CEold,             // various iterations of the transfer coeff
   CEnew,             //
@@ -236,7 +240,9 @@ private proc Flux(
     var tstar = Ce*delT;
     var tvstar = (1 + 0.61*qa)*tstar + 0.61*Ta*qstar;
     zeta_a = -kappa*g*za*tvstar/(Tv*ustar**2);
+    zeta0_a = -kappa*g*z0E*tvstar/(Tv*ustar**2);
     zeta_b = -kappa*g*zb*tvstar/(Tv*ustar**2);
+    zeta0_b = -kappa*g*z0*tvstar/(Tv*ustar**2);
     //      writeln("CE = ",CEnew);
     // -----------------------------------------------------------------------------
     // below everything is old
@@ -244,8 +250,8 @@ private proc Flux(
     z0plus = ustar*z0/nu;            // roughness Reynolds number
     //      z0E = if z0plus < 2 then 0.624*nu/ustar else z0*exp(-2.25*z0plus**0.25) ; 
     z0E = z0*exp(-2.25*z0plus**0.25) ; 
-    Ce = kappa/(log(za/z0E) - Psi_E(zeta_a));
-    Cm = kappa/(log(zb/z0) - Psi_tau(zeta_b));
+    Ce = kappa/(log(za/z0E) - Psi_E(zeta_a) + Psi_E(zeta0_a));
+    Cm = kappa/(log(zb/z0) - Psi_tau(zeta_b) + Psi_tau(zeta0_b));
     ustar = Cm*uu;
     CEnew = Cm*Ce;
     kount += 1;

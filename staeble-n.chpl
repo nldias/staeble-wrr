@@ -27,11 +27,13 @@ if describe then {
 // /============================================================================
 use IO, Time;                  // system modules
 use dgrow;
-use sunearth only ddse, rsds;
+use sunearth;
 use atmgas;
 use angles;
 use evap;
+use nstat;
 use ssr only sum;
+use water;
 IniPar(374.6,0.97);                // Lake Meads's altitude, water emissivity
 var rlat = dec2rad(36.146084);     // Lake Mead's latitude in radians
 Prescott(a=0.3,b=0.575);           // so say Lake Mead's measurements
@@ -116,16 +118,7 @@ for i in 1..n do {
   var (delta,rr) = ddse(yy[i],mm[i],dd[i]);
   var (Rsea,dsmax) = rsds(rlat,rr,delta);
   var S = SPrescott(Rsea,Rs[i]);
-  var alb: real;
-  // -----------------------------------------------------------------------------
-  // check for the albedo of ice
-  // -----------------------------------------------------------------------------   
-  if T0[i] > 0.0 then {
-    alb = WaterAlbedo(yy[i],mm[i],dd[i],rlat);
-  }
-  else {
-    alb = 0.45;
-  }
+  var alb = WaterAlbedo(yy[i],mm[i],dd[i],rlat);
   Radiation(alb,ea[i],Ta[i]+273.15,T0[i]+273.15,S,Rs[i],Ra[i],Re[i],Rn[i]);
   // -----------------------------------------------------------------------------
   // accumulate intermediate results

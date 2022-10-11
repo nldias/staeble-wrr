@@ -24,11 +24,13 @@ if describe then {
 // /============================================================================
 use IO, Time;                  // system modules
 use dgrow;
-use sunearth only ddse, rsds;
+use sunearth;
 use atmgas;
 use angles;
 use evap;
+use nstat;
 use ssr only sum;
+use water;
 IniPar(374.6,0.97);                // Lake Meads's altitude, water emissivity
 var rlat = dec2rad(36.146084);     // Lake Mead's latitude in radians
 Prescott(a=0.3,b=0.575);           // so say Lake Mead's measurements
@@ -103,9 +105,11 @@ private proc Flux(
   const delT = T0 - Ta;           // temperature difference
   const Tv = (1 + 0.61*qa)*Ta;    // virtual temperature
   var zeta_a: real;               // stability at za
+  var zeta0_a: real;              // stablity at z0E
   var zeta_b: real;               // stability at zb
+  var zeta0_b: real;              // stability at z0
   var
-    CEold,             // various iterations of the transfer coeff
+  CEold,             // various iterations of the transfer coeff
   CEnew,             //
   Cm,                // partial transfer coeff for momentum
   Ce,                // partial transfer coeff for water vapor
@@ -140,12 +144,14 @@ private proc Flux(
     var tstar = Ce*delT;
     var tvstar = (1 + 0.61*qa)*tstar + 0.61*Ta*qstar;
     zeta_a = -kappa*g*za*tvstar/(Tv*ustar**2);
+    zeta0_a = -kappa*g*z0E*tvstar/(Tv*ustar**2);
     zeta_b = -kappa*g*zb*tvstar/(Tv*ustar**2);
+    zeta0_b = -kappa*g*z0*tvstar/(Tv*ustar**2);
     // if i == 817 then writeln("CE = ",CEnew);
     // if i == 817 then writeln("u* = ",ustar);
     // if i == 817 then writeln("z0 = ",z0);
-    Ce = kappa/(log(za/z0E) - Psi_E(zeta_a));
-    Cm = kappa/(log(zb/z0) - Psi_tau(zeta_b));
+    Ce = kappa/(log(za/z0E) - Psi_E(zeta_a) + Psi_E(zeta0_a));
+    Cm = kappa/(log(zb/z0) - Psi_tau(zeta_b) + Psi_tau(zeta0_b));
     ustar = Cm*uu;
     z0 = aM*ustar**2/g;          // Charnock
     z0plus = ustar*z0/nu;        // roughness Reynolds number
@@ -271,16 +277,7 @@ proc Enclose(in aM: real): real {
     var (delta,rr) = ddse(yy[i],mm[i],dd[i]);
     var (Rsea,dsmax) = rsds(rlat,rr,delta);
     var S = SPrescott(Rsea,Rs[i]);
-    var alb: real;
-    // -----------------------------------------------------------------------------
-    // check for the albedo of ice
-    // -----------------------------------------------------------------------------   
-    if T0[i] > 0.0 then {
-      alb = WaterAlbedo(yy[i],mm[i],dd[i],rlat);
-    }
-    else {
-      alb = 0.45;
-    }
+    var alb = WaterAlbedo(yy[i],mm[i],dd[i],rlat);
     var TaK = Ta[i]+273.15;
     var T0K = T0[i]+273.15;
     Radiation(alb,ea[i],TaK,T0K,S,Rs[i],Ra[i],Re[i],Rn[i]);
