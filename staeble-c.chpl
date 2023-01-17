@@ -37,8 +37,8 @@ Brutsaert(a=0.7140,b=0.0687);      // Brutsaert's constants for Lake Mead
 // -----------------------------------------------------------------------------
 // measurement levels
 // -----------------------------------------------------------------------------
-const za = 2;                 // ea and Ta are nominally measured at 2 m
-const zb = 10;                // wind is measured at 10 m
+const za = 2.0;                 // ea and Ta are nominally measured at 2 m
+const zb = 10.0;                // wind is measured at 10 m
 // -----------------------------------------------------------------------------
 // for simplicity, rho, cp, gamma and L0 will all be held constant
 // -----------------------------------------------------------------------------
@@ -60,26 +60,26 @@ var idate: [idata] int;       // the inverse table of sdate
 var n: int = 0;               // count the days
 var
   yy,                        // year,
-mm,                        // month,
-dd                         // day
-: [ddata] int ;
+  mm,                        // month,
+  dd                         // day
+  : [ddata] int ;
 var
-  T0,              // water surface temperature, MODIS
-Ta,              // air temperature, ERA5
-e0,              // sat vapor pressure at T0
-ea,              // water vapor pressure, ERA5
-uu,              // wind speed at 10 m, ERA5
-Rs,              // solar radiation, ERA5
-Ra,              // estimated downwelling atmospheric radiation
-Re,              // emitted radiation
-Rn,              // estimated net radiation
-HH,              // sensible heat flux
-LE,              // latent heat flux
-ustar,           // friction velocity
-zeta,            // Obukhov stabilit variable
-DD,              // rate of change of enthalpy
-XX:              // cumulative mass and heat transfer term
-[ddata] real;
+   T0,              // water surface temperature, MODIS
+   Ta,              // air temperature, ERA5
+   e0,              // sat vapor pressure at T0
+   ea,              // water vapor pressure, ERA5
+   uu,              // wind speed at 10 m, ERA5
+   Rs,              // solar radiation, ERA5
+   Ra,              // estimated downwelling atmospheric radiation
+   Re,              // emitted radiation
+   Rn,              // estimated net radiation
+   HH,              // sensible heat flux
+   LE,              // latent heat flux
+   ustar,           // friction velocity
+   zeta,            // Obukhov stabilit variable
+   DD,              // rate of change of enthalpy
+   XX:              // cumulative mass and heat transfer term
+   [ddata] real;
 // /============================================================================
 // read data
 // /============================================================================
@@ -110,10 +110,10 @@ ddata = {1..n};     // resize ddata
 // now we try to nail it
 // =============================================================================
 var
-  lz0l,                      // log of right roughness
-lz0r,                      // log of left roughness
-lz0m,                      // middle roughness
-z0: real;                  // effective roughness
+   lz0l,                      // log of right roughness
+   lz0r,                      // log of left roughness
+   lz0m,                      // middle roughness
+   z0: real;                  // effective roughness
 lz0l = log(2.0e-8);           // very small roughness
 lz0r = log(zb/2);             // very large roughness
 lz0m = (lz0l + lz0r)/2.0;
@@ -207,15 +207,14 @@ private proc Flux(
   var zeta_b: real;               // stability at zb
   var zeta0_b: real;              // stability at z0
   var
-    CEold,             // various iterations of the transfer coeff
-  CEnew,             //
-  Cm,                // partial transfer coeff for momentum
-  Ce,                // partial transfer coeff for water vapor
-  // & sensible heat
-  ustar,             // the friction velocity
-  z0plus,            // The roughness Reynolds number
-  z0E                // the scalar roughness length
-  : real;
+     CEold,             // various iterations of the transfer coeff
+     CEnew,             //
+     Cm,                // partial transfer coeff for momentum
+     Ce,                // partial transfer coeff for water vapor & sensible heat
+     ustar,             // the friction velocity
+     z0plus,            // The roughness Reynolds number
+     z0E                // the scalar roughness length
+     : real;
   // -----------------------------------------------------------------------------
   // always start at neutral
   // -----------------------------------------------------------------------------
@@ -249,7 +248,7 @@ private proc Flux(
     // -----------------------------------------------------------------------------
     z0plus = ustar*z0/nu;            // roughness Reynolds number
     //      z0E = if z0plus < 2 then 0.624*nu/ustar else z0*exp(-2.25*z0plus**0.25) ; 
-    z0E = z0*exp(-2.25*z0plus**0.25) ; 
+    z0E = 7.4*z0*exp(-2.25*z0plus**0.25) ; 
     Ce = kappa/(log(za/z0E) - Psi_E(zeta_a) + Psi_E(zeta0_a));
     Cm = kappa/(log(zb/z0) - Psi_tau(zeta_b) + Psi_tau(zeta0_b));
     ustar = Cm*uu;
@@ -276,7 +275,7 @@ private proc Psi_tau(const in zeta: real): real {
     psi += half_pi;
   }
   else if zeta > 1.0 then {
-    psi = -5.0;
+     psi = -5.0*(1 + log(zeta));
   }
   else {
     psi = -5.0*zeta;
@@ -293,7 +292,7 @@ private proc Psi_E(const in zeta: real): real {
     psi = 2*log((b**2 + 1.0)/2.0);
   }
   else if zeta > 1.0 then {
-    psi = -5.0;
+     psi = -5.0*(1 + log(zeta));
   }
   else {
     psi = -5.0*zeta;

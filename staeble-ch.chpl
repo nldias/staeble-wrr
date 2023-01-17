@@ -62,7 +62,7 @@ private proc Psi_tau(const in zeta: real): real {
     psi += half_pi;
   }
   else if zeta > 1.0 then {
-    psi = -5.0;
+     psi = -5.0*(1 + log(zeta));
   }
   else {
     psi = -5.0*zeta;
@@ -79,7 +79,7 @@ private proc Psi_E(const in zeta: real): real {
     psi = 2*log((b**2 + 1.0)/2.0);
   }
   else if zeta > 1.0 then {
-    psi = -5.0;
+     psi = -5.0*(1 + log(zeta));
   }
   else {
     psi = -5.0*zeta;
@@ -155,7 +155,7 @@ private proc Flux(
     ustar = Cm*uu;
     z0 = aM*ustar**2/g;          // Charnock
     z0plus = ustar*z0/nu;        // roughness Reynolds number
-    z0E = z0*exp(-2.25*z0plus**0.25) ; 
+    z0E = 7.4*z0*exp(-2.25*z0plus**0.25) ; 
     CEnew = Cm*Ce;
     //    if i == 817 then writeln("CEnew = ",CEnew);
     kount += 1;
