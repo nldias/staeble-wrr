@@ -1,7 +1,7 @@
 config const describe = false;
 const doc = "\
 =================================================================================\
-==> staeble-c: incorporates stability-dependent transfer coefficients            \
+==> staeble-ch: incorporates stability-dependent transfer coefficients           \
                                                                                  \
 =================================================================================\
 ";
@@ -152,38 +152,43 @@ cod.close();
 // --> EnClose: calculate the difference sum(R) - sum(XX) as a function of z0
 // -----------------------------------------------------------------------------
 proc Enclose(in z0: real): real {
-  // -----------------------------------------------------------------------------
-  // 1st pass: calculate net irradiance and accumulate Delta T, Delta e
-  // -----------------------------------------------------------------------------
-  for i in 1..n do {
-    var (delta,rr) = ddse(yy[i],mm[i],dd[i]);
-    var (Rsea,dsmax) = rsds(rlat,rr,delta);
-    var S = SPrescott(Rsea,Rs[i]);
-    var alb: real;
-    // -----------------------------------------------------------------------------
-    // check for the albedo of ice
-    // -----------------------------------------------------------------------------   
-    if T0[i] > 0.0 then {
-      alb = WaterAlbedo(yy[i],mm[i],dd[i],rlat);
-    }
-    else {
-      alb = 0.45;
-    }
-    var TaK = Ta[i]+273.15;
-    var T0K = T0[i]+273.15;
-    Radiation(alb,ea[i],TaK,T0K,S,Rs[i],Ra[i],Re[i],Rn[i]);
-    // -----------------------------------------------------------------------------
-    // accumulate intermediate results
-    // -----------------------------------------------------------------------------
-    //      writeln("i = ",i," *** date = ",sdate[i]);
-    (HH[i],LE[i],ustar[i],zeta[i]) = Flux(z0,T0K,TaK,e0[i],ea[i],uu[i]);
-    XX[i] = HH[i] + LE[i];
-    DD[i] = Rn[i] - XX[i];
-  }
-  var SRn = sum(Rn[1..n]);
-  var SXX = sum(XX[1..n]);
-  var dclose = (SRn - SXX)/SRn;
-  return dclose;
+   // -----------------------------------------------------------------------------
+   // 1st pass: calculate net irradiance and accumulate Delta T, Delta e
+   // -----------------------------------------------------------------------------
+   var nz: int = 0;
+   for i in 1..n do {
+      var (delta,rr) = ddse(yy[i],mm[i],dd[i]);
+      var (Rsea,dsmax) = rsds(rlat,rr,delta);
+      var S = SPrescott(Rsea,Rs[i]);
+      var alb: real;
+      // -----------------------------------------------------------------------------
+      // check for the albedo of ice
+      // -----------------------------------------------------------------------------   
+      if T0[i] > 0.0 then {
+         alb = WaterAlbedo(yy[i],mm[i],dd[i],rlat);
+      }
+      else {
+         alb = 0.45;
+      }
+      var TaK = Ta[i]+273.15;
+      var T0K = T0[i]+273.15;
+      Radiation(alb,ea[i],TaK,T0K,S,Rs[i],Ra[i],Re[i],Rn[i]);
+      // -----------------------------------------------------------------------------
+      // accumulate intermediate results
+      // -----------------------------------------------------------------------------
+      //      writeln("i = ",i," *** date = ",sdate[i]);
+      (HH[i],LE[i],ustar[i],zeta[i]) = Flux(z0,T0K,TaK,e0[i],ea[i],uu[i]);
+      if (zeta[i] > 1.0 ) then {
+         nz += 1;
+      }
+      XX[i] = HH[i] + LE[i];
+      DD[i] = Rn[i] - XX[i];
+   }
+   writeln("nz = ",nz);
+   var SRn = sum(Rn[1..n]);
+   var SXX = sum(XX[1..n]);
+   var dclose = (SRn - SXX)/SRn;
+   return dclose;
 }
 // -----------------------------------------------------------------------------
 // --> Flux: iterative flux solution using MOST similarity functions
@@ -275,7 +280,7 @@ private proc Psi_tau(const in zeta: real): real {
     psi += half_pi;
   }
   else if zeta > 1.0 then {
-     psi = -5.0*(1 + log(zeta));
+     psi = -5.0; 
   }
   else {
     psi = -5.0*zeta;
@@ -292,7 +297,7 @@ private proc Psi_E(const in zeta: real): real {
     psi = 2*log((b**2 + 1.0)/2.0);
   }
   else if zeta > 1.0 then {
-     psi = -5.0*(1 + log(zeta));
+     psi = -5.0; 
   }
   else {
     psi = -5.0*zeta;

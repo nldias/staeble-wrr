@@ -62,7 +62,7 @@ private proc Psi_tau(const in zeta: real): real {
     psi += half_pi;
   }
   else if zeta > 1.0 then {
-     psi = -5.0*(1 + log(zeta));
+     psi = -5.0;
   }
   else {
     psi = -5.0*zeta;
@@ -79,7 +79,7 @@ private proc Psi_E(const in zeta: real): real {
     psi = 2*log((b**2 + 1.0)/2.0);
   }
   else if zeta > 1.0 then {
-     psi = -5.0*(1 + log(zeta));
+     psi = -5.0;
   }
   else {
     psi = -5.0*zeta;
